@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Prof Fin IT | Global Creative Ecosystem</title>
+    
+    <!-- Cyber Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Plus+Jakarta+Sans:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        :root {
+            --p: #00f2ff; /* Neon Cyan */
+            --s: #7000ff; /* Neon Purple */
+            --a: #ff007a; /* Neon Pink */
+            --bg: #020308;
+            --glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(0, 242, 255, 0.2);
+            --text: #ffffff;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg); color: var(--text); overflow-x: hidden; scroll-behavior: smooth; }
+
+        /* Canvas Background */
+        #particleCanvas { position: fixed; top: 0; left: 0; z-index: -1; width: 100%; height: 100%; }
+
+        /* Navigation Header */
+        nav {
+            position: fixed; top: 0; width: 100%; height: 70px;
+            background: rgba(2, 3, 8, 0.8); backdrop-filter: blur(20px);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 5%; z-index: 1000; border-bottom: 2px solid var(--p);
+            box-shadow: 0 0 20px rgba(0, 242, 255, 0.3);
+        }
+        .logo { font-family: 'Orbitron'; font-size: 18px; font-weight: 900; color: var(--p); text-shadow: 0 0 10px var(--p); }
+
+        /* Views */
+        .view { display: none; padding: 90px 5% 120px; min-height: 100vh; animation: zoomIn 0.5s ease; }
+        .view.active { display: block; }
+        @keyframes zoomIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+
+        /* 🚀 HOME CREATIVE ELEMENTS */
+        .terminal-box {
+            background: #000; border: 1px solid var(--p); border-radius: 15px;
+            padding: 15px; font-family: 'JetBrains Mono'; font-size: 12px; color: var(--p);
+            margin-bottom: 30px; box-shadow: 0 0 20px rgba(0, 242, 255, 0.1);
+        }
+        .neon-ring-container {
+            position: relative; width: 200px; height: 200px; margin: 0 auto 40px;
+            display: flex; justify-content: center; align-items: center;
+        }
+        .ring {
+            position: absolute; width: 100%; height: 100%;
+            border: 2px solid transparent; border-radius: 50%;
+            border-top: 2px solid var(--p); border-bottom: 2px solid var(--a);
+            animation: rotateRing 4s linear infinite;
+        }
+        @keyframes rotateRing { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .ring-inner {
+            position: absolute; width: 80%; height: 80%;
+            border: 2px solid transparent; border-radius: 50%;
+            border-left: 2px solid var(--s); border-right: 2px solid var(--p);
+            animation: rotateRing 2s linear infinite reverse;
+        }
+        .ring-text { font-family: 'Orbitron'; font-weight: 900; font-size: 24px; text-align: center; }
+
+        /* Bento Grid */
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 15px; }
+        .card { 
+            background: var(--glass); border: 1px solid var(--border); border-radius: 25px; 
+            padding: 25px; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: pointer;
+            backdrop-filter: blur(10px);
+        }
+        .card:hover { border-color: var(--p); transform: translateY(-10px) scale(1.02); box-shadow: 0 0 30px rgba(0, 242, 255, 0.2); }
+        .card i { font-size: 2rem; color: var(--p); margin-bottom: 15px; text-shadow: 0 0 10px var(--p); }
+
+        /* Floating Nav Bar */
+        .tab-bar {
+            position: fixed; bottom: 20px; left: 5%; width: 90%; height: 75px;
+            background: rgba(10, 15, 25, 0.9); backdrop-filter: blur(30px);
+            border-radius: 40px; border: 1px solid var(--p);
+            display: flex; justify-content: space-around; align-items: center; z-index: 2000;
+            box-shadow: 0 0 30px rgba(0, 242, 255, 0.3);
+        }
+        .tab-item { color: #444; text-decoration: none; text-align: center; font-size: 9px; font-weight: 800; cursor: pointer; transition: 0.3s; width: 16%; }
+        .tab-item.active { color: var(--p); text-shadow: 0 0 15px var(--p); }
+        .tab-item i { font-size: 20px; display: block; margin-bottom: 5px; }
+
+        /* Buttons & Forms */
+        .btn-cyber { background: var(--p); color: #000; border: none; padding: 16px; border-radius: 15px; font-weight: 900; font-family: 'Orbitron'; cursor: pointer; width: 100%; transition: 0.3s; box-shadow: 0 0 15px var(--p); }
+        .btn-cyber:active { transform: scale(0.95); }
+        input, select { width: 100%; padding: 15px; border-radius: 15px; background: #000; border: 1px solid var(--border); color: #fff; margin-bottom: 10px; }
+
+        /* Admin UI */
+        .admin-card { background: rgba(0,0,0,0.5); padding: 20px; border-radius: 20px; border-left: 5px solid var(--a); margin-bottom: 15px; }
+
+        @media (max-width: 768px) { .logo { font-size: 14px; } .grid { grid-template-columns: repeat(2, 1fr); } }
+    </style>
+</head>
+<body>
+
+    <canvas id="particleCanvas"></canvas>
+
+    <nav>
+        <div class="logo">Prof fin IT</div>
+        <div style="display:flex; gap:10px; align-items:center;">
+            <div id="topTime" style="font-family:'Orbitron'; font-size: 12px; color: var(--p);">00:00</div>
+            <button onclick="toggleLang()" class="btn-cyber" style="padding: 5px 12px; width: auto; font-size: 10px; box-shadow: none;" id="langBtn">UZB</button>
+        </div>
+    </nav>
+
+    <!-- 🏠 HOME VIEW -->
+    <section id="homeView" class="view active">
+       
+        <div class="neon-ring-container">
+            <div class="ring"></div>
+            <div class="ring-inner"></div>
+            <div class="ring-text neon-price">Prof Fin-IT</div>
+        </div>
+
+        <h1 style="font-family:'Orbitron'; font-size: 2.5rem; text-align: center; line-height: 1; margin-bottom: 30px;" id="heroH1">
+            BEYOND <span style="color:var(--p)">REALITY</span>
+        </h1>
+
+        <div class="grid">
+            <div class="card" onclick="switchTab('servicesView')" style="grid-column: span 2; border-color: var(--p);">
+                <i class="fa-solid fa-bolt"></i>
+                <h3 data-key="h_order_h">Buyurtma Berish</h3>
+                <p style="font-size: 11px; color:#888;" data-key="h_order_p">Tezkor IT ta'mirlash xizmatlari terminali.</p>
+            </div>
+            <div class="card" onclick="switchTab('profileView')">
+                <i class="fa-solid fa-fingerprint" style="color:var(--a)"></i>
+                <h3 data-key="h_profile">ID-Kabinet</h3>
+                <p style="font-size: 10px; color:#666;">XP: 850</p>
+            </div>
+            <div class="card" onclick="switchTab('toolsView')">
+                <i class="fa-solid fa-microchip" style="color:var(--s)"></i>
+                <h3 data-key="h_tools">Tools</h3>
+                <p style="font-size: 10px; color:#666;">100+ functions</p>
+            </div>
+        </div>
+
+        <div class="grid" style="margin-top: 20px;">
+            <div class="card" style="text-align: center;">
+                <h2 id="countOrders" style="color:var(--p)">0</h2>
+                <small data-key="adm_ord">Buyurtmalar</small>
+            </div>
+            <div class="card" style="text-align: center;">
+                <h2 style="color:var(--a)">100%</h2>
+                <small data-key="h_status">Kafolat</small>
+            </div>
+        </div>
+    </section>
+
+    <!-- 🛠 SERVICES VIEW -->
+    <section id="servicesView" class="view">
+        <h2 class="logo" style="margin-bottom: 30px; font-size: 24px;">CYBER_SERVICES</h2>
+        <div class="grid">
+            <div class="card" style="grid-column: span 2; border-color: var(--s);" onclick="openBooking('Soft Work', 6350000)">
+                <i class="fa-solid fa-code" style="color:var(--s)"></i>
+                <h3>Soft Work ($500)</h3>
+                <p style="font-size: 11px; color:#888;" data-key="s_soft_p">AI va CRM tizimlarini yaratish.</p>
+                <b class="neon-price">6,350,000 UZS</b>
+            </div>
+            <div class="card" onclick="openBooking('Kartrij', 40000)">
+                <i class="fa-solid fa-vial"></i>
+                <h3>Kartrij</h3>
+                <b class="neon-price">40,000 UZS</b>
+            </div>
+            <div class="card" onclick="openBooking('Kompyuter', 100000)">
+                <i class="fa-solid fa-laptop-code"></i>
+                <h3>PC Repair</h3>
+                <b class="neon-price">100,000 UZS</b>
+            </div>
+            <div class="card" style="grid-column: span 2; border-color: var(--a);" onclick="openBooking('QR Design', 12000)">
+                <i class="fa-solid fa-qrcode" style="color:var(--a)"></i>
+                <h3>QR Design</h3>
+                <b class="neon-price" style="color: var(--a);">12,000 UZS</b>
+            </div>
+        </div>
+    </section>
+
+    <!-- 🤖 AI VIEW -->
+    <section id="aiView" class="view">
+        <h2 class="logo" style="margin-bottom: 20px;">AI_BRAIN</h2>
+        <div id="chatBox" style="height: 350px; overflow-y: auto; background: rgba(0,0,0,0.5); border: 1px solid var(--border); padding: 20px; border-radius: 20px; display: flex; flex-direction: column; gap: 10px;">
+            <div style="background: rgba(112,0,255,0.1); padding: 12px; border-radius: 15px; border-left: 4px solid var(--s); align-self: flex-start; font-size: 13px;">
+                > SALOM. MEN PROF FIN AI. QANDAY IT MUAMMO BOR?
+            </div>
+        </div>
+        <div style="display:flex; gap:10px; margin-top:15px;">
+            <input type="text" id="aiInp" placeholder="Terminal input..." style="margin:0;">
+            <button onclick="askAI()" class="btn-cyber" style="width: 60px;"><i class="fa-solid fa-paper-plane"></i></button>
+        </div>
+    </section>
+
+    <!-- 🧰 TOOLS VIEW -->
+    <section id="toolsView" class="view">
+        <h2 class="logo" style="margin-bottom: 30px;">CORE_TOOLKIT</h2>
+        <div class="grid">
+            <div class="card" onclick="toolSpeed()" style="text-align:center;"><i class="fa-solid fa-gauge"></i><br><small>Speed</small></div>
+            <div class="card" onclick="toolIP()" style="text-align:center;"><i class="fa-solid fa-globe"></i><br><small>IP</small></div>
+            <div class="card" onclick="toolPass()" style="text-align:center;"><i class="fa-solid fa-key"></i><br><small>Pass</small></div>
+            <div class="card" onclick="toolClear()" style="text-align:center;"><i class="fa-solid fa-broom"></i><br><small>RAM</small></div>
+            <div class="card" onclick="toolQR()" style="text-align:center;"><i class="fa-solid fa-qrcode"></i><br><small>QR Gen</small></div>
+            <div class="card" onclick="alert('MB: 12,680 UZS')" style="text-align:center;"><i class="fa-solid fa-dollar-sign"></i><br><small>Kurs</small></div>
+            <div class="card" onclick="window.print()" style="text-align:center;"><i class="fa-solid fa-print"></i><br><small>Print</small></div>
+            <div class="card" onclick="location.reload()" style="text-align:center;"><i class="fa-solid fa-refresh"></i><br><small>Reboot</small></div>
+        </div>
+    </section>
+
+    <!-- 📊 ADMIN VIEW -->
+    <section id="adminView" class="view">
+        <h2 class="logo" style="color:var(--a);">ROOT@ADMIN:~$</h2>
+        <div class="grid" style="margin-top: 20px;">
+            <div class="card"><small data-key="adm_rev">Revenue</small><h2 id="admRev" class="neon-price">0</h2></div>
+            <div class="card"><small data-key="adm_ord">Orders</small><h2 id="admOrders" style="color:var(--s)">0</h2></div>
+        </div>
+        <div id="adminList" style="margin-top: 20px;"></div>
+    </section>
+
+    <!-- 👤 PROFILE VIEW -->
+    <section id="profileView" class="view">
+        <div style="text-align: center;">
+            <div style="width: 100px; height: 100px; border-radius: 50%; background: linear-gradient(45deg, var(--p), var(--s)); margin: 0 auto 20px; display: flex; justify-content: center; align-items: center; border: 4px solid var(--border);">
+                <i class="fa-solid fa-user-ninja" style="font-size: 40px; color: #fff;"></i>
+            </div>
+            <h2 class="logo">USER_PF_9071</h2>
+            <p style="color:var(--p); font-weight: 800; font-size: 12px; margin-top: 10px;">LEVEL: GOLD MASTER</p>
+        </div>
+        <br>
+        <div class="card">
+            <p>Cashback Balance: <b style="color:var(--p);">25,000 UZS</b></p>
+            <button class="btn-cyber" style="margin-top: 15px; font-size: 10px; padding: 10px;">REDEEM BONUS</button>
+        </div>
+    </section>
+
+    <!-- 📱 TAB BAR -->
+    <div class="tab-bar">
+        <div class="tab-item active" onclick="switchTab('homeView')"><i class="fa-solid fa-house-crack"></i>Home</div>
+        <div class="tab-item" onclick="switchTab('servicesView')"><i class="fa-solid fa-screwdriver-wrench"></i>Servis</div>
+        <div class="tab-item" onclick="switchTab('aiView')"><i class="fa-solid fa-robot"></i>AI</div>
+        <div class="tab-item" onclick="switchTab('toolsView')"><i class="fa-solid fa-toolbox"></i>Tools</div>
+        <div class="tab-item" onclick="switchTab('profileView')"><i class="fa-solid fa-user-gear"></i>Me</div>
+        <div class="tab-item" onclick="adminLogin()"><i class="fa-solid fa-shield-halved"></i>Admin</div>
+    </div>
+
+    <!-- 📝 MODAL -->
+    <div id="bookingModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:3000; justify-content:center; align-items:flex-end; padding:20px;">
+        <div class="card" style="width:100%; max-width:500px; background:#000; border-radius: 30px 30px 0 0; border-top: 2px solid var(--p);">
+            <h2 id="mTitle" class="logo">RESERVE_SLOT</h2>
+            <br>
+            <form id="orderForm">
+                <input type="text" id="cName" placeholder="NAME" required>
+                <input type="tel" id="cPhone" value="+998 " required>
+                <input type="date" id="cDate" required>
+                <div style="padding:15px; border:1px dashed var(--p); color:var(--p); border-radius:15px; font-size:11px; margin-bottom:20px;">
+                    <p data-key="pay_info">Pre-payment: 15,000 UZS. Karta: 8600 0000 0000 0000</p>
+                </div>
+                <button type="submit" class="btn-cyber">EXECUTE ORDER</button>
+                <button type="button" onclick="closeModal()" style="width:100%; background:none; border:none; color:#444; margin-top:10px;">CANCEL</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // 💾 DB & STATE
+        let orders = JSON.parse(localStorage.getItem('creative_db')) || [];
+        const ADMIN_PASS = "907107722Aff";
+        let currentLang = 'uz';
+
+        // 🕒 LIVE CLOCK
+        setInterval(() => {
+            document.getElementById('topTime').innerText = new Date().toLocaleTimeString().slice(0, 5);
+        }, 1000);
+
+        // 🔄 TAB SWITCHER
+        function switchTab(id) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            
+            document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+            const items = Array.from(document.querySelectorAll('.tab-item'));
+            const target = items.find(i => i.innerText.toLowerCase().includes(id.replace('View','').toLowerCase()));
+            if(target) target.classList.add('active');
+            window.scrollTo(0,0);
+        }
+
+        // 🤖 AI
+        function askAI() {
+            const inp = document.getElementById('aiInp');
+            const box = document.getElementById('chatBox');
+            if(!inp.value) return;
+            box.innerHTML += `<div style="background: var(--p); color: #000; padding: 10px; border-radius: 15px; align-self: flex-end; font-size: 13px;">${inp.value}</div>`;
+            const v = inp.value.toLowerCase();
+            inp.value = '';
+            setTimeout(() => {
+                let r = "> ADMIN_CALL: +998907107722";
+                if(v.includes('printer')) r = "> PRINTER_UNIT: KARTRIJNI TEKSHIRING. ZAPRAFKA: 40,000 UZS.";
+                if(v.includes('soft')) r = "> DEV_MOD: SOFT WORK $500. MURAKKAB TIZIMLAR.";
+                box.innerHTML += `<div style="background: rgba(255,0,122,0.1); padding: 10px; border-radius: 15px; align-self: flex-start; font-size: 13px; color: var(--a); border-left: 4px solid var(--a);">${r}</div>`;
+                box.scrollTop = box.scrollHeight;
+            }, 800);
+        }
+
+        // 📅 BOOKING
+        let selS = "";
+        function openBooking(s, p) { selS = s; document.getElementById('mTitle').innerText = s; document.getElementById('bookingModal').style.display = 'flex'; }
+        function closeModal() { document.getElementById('bookingModal').style.display = 'none'; }
+
+        document.getElementById('orderForm').onsubmit = (e) => {
+            e.preventDefault();
+            const order = { id: 'PF-' + Math.floor(1000 + Math.random()*9000), name: document.getElementById('cName').value, phone: document.getElementById('cPhone').value, service: selS, status: 'Yangi' };
+            orders.push(order);
+            localStorage.setItem('creative_db', JSON.stringify(orders));
+            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#00f2ff', '#7000ff'] });
+            alert("Muvaffaqiyatli! ID: " + order.id);
+            closeModal();
+            switchTab('homeView');
+            updateCounts();
+        };
+
+        // 📊 ADMIN
+        function adminLogin() {
+            const p = prompt("ENTER_ACCESS_KEY:");
+            if(p === ADMIN_PASS) { switchTab('adminView'); renderAdmin(); } else { alert("ACCESS_DENIED!"); }
+        }
+
+        function renderAdmin() {
+            document.getElementById('admOrders').innerText = orders.length;
+            let rev = 0;
+            const list = document.getElementById('adminList');
+            list.innerHTML = '';
+            orders.reverse().forEach(o => {
+                if(o.service.includes('Kartrij')) rev += 40000;
+                if(o.service.includes('Kompyuter')) rev += 100000;
+                if(o.service.includes('Soft')) rev += 6350000;
+                list.innerHTML += `<div class="admin-card"><b>${o.name}</b> (${o.id})<br>${o.service}</div>`;
+            });
+            document.getElementById('admRev').innerText = rev.toLocaleString() + " UZS";
+        }
+
+        // 🛠 TOOLS
+        function toolSpeed() { alert("NET_SPEED: 98.4 Mbps."); }
+        function toolIP() { alert("IP: 178.218.201.22"); }
+        function toolPass() { alert("PASS: " + Math.random().toString(36).slice(-10).toUpperCase()); }
+        function toolClear() { alert("RAM_CLEANED!"); }
+        function toolQR() { alert("QR_ENGINE_START!"); }
+
+        function updateCounts() { document.getElementById('countOrders').innerText = orders.length; }
+        updateCounts();
+
+        // 🎨 CANVAS PARTICLES
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        let particles = [];
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2;
+                this.speedX = Math.random() * 1 - 0.5;
+                this.speedY = Math.random() * 1 - 0.5;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.x > canvas.width || this.x < 0) this.speedX *= -1;
+                if (this.y > canvas.height || this.y < 0) this.speedY *= -1;
+            }
+            draw() {
+                ctx.fillStyle = 'rgba(0, 242, 255, 0.5)';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            for (let i = 0; i < 80; i++) particles.push(new Particle());
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach((p, index) => {
+                p.update();
+                p.draw();
+                for (let j = index; j < particles.length; j++) {
+                    const dx = p.x - particles[j].x;
+                    const dy = p.y - particles[j].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 100) {
+                        ctx.strokeStyle = 'rgba(0, 242, 255, 0.1)';
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        ctx.moveTo(p.x, p.y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+            });
+            requestAnimationFrame(animateParticles);
+        }
+        initParticles();
+        animateParticles();
+
+        // ⌨️ TERMINAL TYPING
+        const logs = ["> INITIALIZING SYSTEM...", "> LOADING IT_DATABASE...", "> BYPASSING FIREWALL...", "> ACCESS GRANTED.", "> READY TO SERVE."];
+        let line = 0;
+        function typeLog() {
+            if(line < logs.length) {
+                document.getElementById('terminalLog').innerHTML += "<br>" + logs[line];
+                line++;
+                setTimeout(typeLog, 1000);
+            }
+        }
+        typeLog();
+
+        // 🌐 LANG (UZB/RUS)
+        const langData = {
+            uz: { h_order_h: "Buyurtma Berish", h_order_p: "Tezkor IT terminal.", h_profile: "ID-Kabinet", h_tools: "Toolkit", h_status: "Kafolat", adm_ord: "Buyurtmalar", s_soft_p: "AI va CRM tizimlari.", pay_info: "Pre-payment: 15,000 UZS. Karta: 8600 0000 0000 0000" },
+            ru: { h_order_h: "Сделать Заказ", h_order_p: "Быстрый IT терминал.", h_profile: "ID-Кабинет", h_tools: "Тулкит", h_status: "Гарантия", adm_ord: "Заказы", s_soft_p: "Создание систем AI и CRM.", pay_info: "Предоплата: 15,000 UZS. Карта: 8600 0000 0000 0000" }
+        };
+
+        function toggleLang() {
+            currentLang = currentLang === 'uz' ? 'ru' : 'uz';
+            document.getElementById('langBtn').innerText = currentLang.toUpperCase();
+            document.querySelectorAll('[data-key]').forEach(el => { el.innerText = langData[currentLang][el.getAttribute('data-key')]; });
+            document.getElementById('heroH1').innerHTML = currentLang === 'uz' ? 'BEYOND <span style="color:var(--p)">REALITY</span>' : 'ВНЕ <span style="color:var(--p)">РЕАЛЬНОСТИ</span>';
+        }
+
+    </script>
+</body>
+</html>
